@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+  <head>
+    <title>snaptrial0</title>
+    <link rel="icon" type="image/svg" href="./images/icon.svg"/>
+	<link rel="icon" type="image/png" href="metamask-fox.svg">
+
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/css/mdb.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="metamask.css" type="text/css">	
+  </head>
+
+  <body>
+    <h1 class="text-center">Hello, Snaps!</h1>
+	
+	<!-- Part 1 -->
+	<section>
+      <div class="row d-flex justify-content-center">
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+          <div class="card">
+            <img class="card-img-top" src="metamask-fox.svg"
+              alt="Card image cap">
+            <div class="card-body">
+              <h4 class="card-title">What's in your wallet?</h4>
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="connect">Connect</button>
+			  <button class="btn btn-primary btn-lg btn-block mb-3" id="getAccountID">Show ETH Address</button> 
+              <p class="info-text alert alert-secondary">Address of first account in list: <span id="getAccountsResult"></span></p>
+			  <button class="btn btn-primary btn-lg btn-block mb-3" id="getBalance">Show Balance</button> 
+              <p class="info-text alert alert-secondary">Eth balance in this account: <span id="getBalanceResult"></span></p>
+			  <!-- <button class="sendHello">Send Hello</button> -->
+			</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- /Part 1 -->
+     
+    <br/>
+  </body>
+
+  <script>
+    const snapId = `local:${window.location.href}`;
+
+    const connectButton = document.getElementById('connect')
+	const accountID = document.getElementById('getAccountID')
+	const balanceButton = document.getElementById('getBalance')
+	const sendButton = document.querySelector('button.sendHello')
+
+    connectButton.addEventListener('click', connect)
+	accountID.addEventListener('click', accounts)
+	balanceButton.addEventListener('click', balance)
+    sendButton.addEventListener('click', send)
+
+    // here we get permissions to interact with and install the snap
+    async function connect () {
+      await ethereum.request({
+        method: 'wallet_enable',
+        params: [{
+          wallet_snap: { [snapId]: {} },
+        }]
+      })
+    }
+
+	//get the address of the first eth account in the list of connected eth accounts
+	async function accounts () {
+		const accountlist = await ethereum.request({method:'eth_accounts'});
+		getAccountsResult.innerHTML = accountlist[0] || 'No connected accounts';
+	}
+
+	//get the balance of the first eth account in the list of connected eth accounts
+	async function balance () {
+		  <!-- const bal = await ethereum.request({method: 'eth_getBalance', params: [accountlist[0], 'latest']});//to work on-->
+		  <!--getBalanceResult.innerHTML = bal || 'Could not fetch balance';-->
+		  getBalanceResult.innerHTML = 'Could not fetch balance';
+	}
+
+    // here we call the snap's "hello" method
+    async function send () {
+      try {
+        const response = await ethereum.request({
+          method: 'wallet_invokeSnap',
+          params: [snapId, {
+            method: 'hello'
+          }]
+        })
+      } catch (err) {
+        console.error(err)
+        alert('Problem happened: ' + err.message || err)
+      }
+    }
+  </script>
+</html>
