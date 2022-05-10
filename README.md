@@ -1,3 +1,2 @@
-# trial0snap
-first commit, learning the metamask dev tools. extending mm template-snap
-this is a practise exercise
+# trial0snap - practise exercise
+first commit, learning the metamask dev tools. extending mm template-snap. 
